@@ -1,4 +1,7 @@
+#include <GL/glew.h>
 #include <GL/glut.h>
+#include <FreeImage.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -10,35 +13,49 @@ float yf = 0.0f;
 float scale =0.1f;
 float cameraDistance = 10.0f;
 float cameraAngle=0.0f;
-float lightRadius = 1.0;
-
-void init()
-{
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glClearColor(19.0f / 255.0f, 75.0f / 255.0f, 112.0f / 255.0f, 1.0f);
-    // Set up the projection matrix (perspective)
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45.0f, 1.0f, 1.0f, 1000.0f);
-    //mengembalikan ke modelview matrix
-    glMatrixMode(GL_MODELVIEW);
-    // Enable lighting
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_DEPTH_TEST);
-
-    // Set light properties
-    GLfloat light_pos[] = {300.0f, 500.0f, 500.0f, 1.0f};
-    GLfloat light_amb[] = {0.2f, 0.2f, 0.2f, 1.0f};
-    GLfloat light_diff[] = {0.2f, 0.2f, 0.2f, 1.0f};
-    GLfloat light_spec[] = {0.1f, 0.1f, 0.1f, 1.0f};
-
-    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-    glLightfv(GL_LIGHT0, GL_AMBIENT, light_amb);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diff);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light_spec);
+GLuint tekstur_jalan;
+GLuint texture_kaca;
+// Fungsi untuk memuat tekstur dari file gambar
+GLuint textureID = 0;
+GLuint loadTexture(const char* path) {
+    glGenTextures(1, &textureID);
+    void* imgData;
+    int imgWidth;
+    int imgHeight;
+    FREE_IMAGE_FORMAT format = FreeImage_GetFIFFromFilename(path);
+    if (format == FIF_UNKNOWN) {
+        printf("Unknown file type for texture image file %s\n", path);
+        return -1;
+    }
+    FIBITMAP* bitmap = FreeImage_Load(format, path, 0);
+    if (!bitmap) {
+        printf("Failed to load image %s\n", path);
+        return -1;
+    }
+    FIBITMAP* bitmap2 = FreeImage_ConvertTo24Bits(bitmap);
+    FreeImage_Unload(bitmap);
+    imgData = FreeImage_GetBits(bitmap2);
+    imgWidth = FreeImage_GetWidth(bitmap2);
+    imgHeight = FreeImage_GetHeight(bitmap2);
+    if (imgData) {
+        printf("Texture image loaded from file %s, size %dx%d\n", path, imgWidth, imgHeight);
+        int format;
+        if (FI_RGBA_RED == 0)
+            format = GL_RGB;
+        else
+            format = GL_BGR;
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0, format, GL_UNSIGNED_BYTE, imgData);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        textureID++;
+        return textureID - 1;
+    } else {
+        printf("Failed to get texture data from %s\n", path);
+    }
+    return -1;
 }
+
+
 void drawLamp(float x, float y, float z, float r, float g, float b) {
     // Menggambar bagian lampu utama
     glColor3f(1.0, 0.0, 0.0);
@@ -122,7 +139,7 @@ void atap()
     glPopMatrix();
 
     // Bagian atas kedua
-    glColor3f(0, 0, 1);
+    glColor3f(0 , 0, 1);
     glPushMatrix();
     glTranslatef(-36, -11, 0);
     glScalef(0.3, 0.01, 0.666667);
@@ -219,74 +236,73 @@ void belakang()
 }
 void addGlass()
 {
-
-
-    // Front Glass (Depan)
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture_kaca);
+    //Depan
     glColor4f(0.0f, 0.5f, 1.0f, 0.5f);
-    glPushMatrix();
-    glTranslatef(-19, -5, 0); // Posisi lebih dekat ke depan
-    glRotatef(-46, 0, 0, 1); // Miringkan kaca depan lebih tajam
-    glScalef(0.001, 0.5, 0.66); // Skala kaca depan
-    glutSolidCube(60);
-    glPopMatrix();
-
-
-    // Left Glass (Kiri)
+    glBegin(GL_QUADS);
+    glVertex3f(-27.9f, -13.0f, -20.0f); // Titik kiri bawah
+    glVertex3f(-27.9f, -13.0f, 20.0f);  // Titik kanan bawah
+    glVertex3f(-8.5f, 6.8f, 20.0f);  // Titik kanan atas
+    glVertex3f(-8.5f, 6.8f, -20.0f); // Titik kiri atas
+    glEnd();
+    //kiri
     glColor4f(0.0f, 0.5f, 1.0f, 0.5f);
-    glPushMatrix();
-    glTranslatef(11, -3, 20); // Posisi lebih rendah dan menempel pada sisi kiri
-    glScalef(0.9, 0.4, 0.01); // Skala kaca kiri
-    glutSolidCube(45);
-    glPopMatrix();
+    glBegin(GL_QUADS);
+    glVertex3f(32.0f, -11.0f, 20.0f); // Titik kanan bawah
+    glVertex3f(32.0f, 6.0f, 20.0f); // Titik kana atas
+    glVertex3f(-8.5f, 6.0f, 20.0f); // Titik kiri atas
+    glVertex3f(-8.5f, -11.0f, 20.0f); // Titik kiri bawah
+    glEnd();
 
-    // Right Glass (Kanan)
+    //kanan
     glColor4f(0.0f, 0.5f, 1.0f, 0.5f);
-    glPushMatrix();
-    glTranslatef(11, -3, -20); // Posisi lebih rendah dan menempel pada sisi kanan
-    glScalef(0.9, 0.4, 0.01); // Skala kaca kanan
-    glutSolidCube(45);
-    glPopMatrix();
+    glBegin(GL_QUADS);
+    glVertex3f(32.0f, -11.0f, -20.0f); // Titik kanan bawah
+    glVertex3f(32.0f, 6.0f, -20.0f); // Titik kanan atas
+    glVertex3f(-8.5f, 6.0f, -20.0f); // Titik kiri atas
+    glVertex3f(-8.5f, -11.0f, -20.0f); // Titik kiri bawah
+    glEnd();
 
     // Back Glass (Belakang)
-    glColor4f(0.0, 204.0 / 255.0f, 221.0 / 255.0f, 0.5f); // Tambahkan kaca belakang
-    glPushMatrix();
-    glTranslatef(38, -2.2, 0); // Posisi kaca belakang
-    glRotatef(37, 0, 0, 1); // Miringkan kaca belakang
-    glScalef(0.01, 0.34, 0.66); // Skala kaca belakang
-    glutSolidCube(60);
-    glPopMatrix();
+    glColor4f(0.0f, 0.5f, 0.5f, 0.5f);
+    glBegin(GL_QUADS);
+    glVertex3f(45.0f, -11.0f, -20.0f); // Titik kiri bawah
+    glVertex3f(45.0f, -11.0f, 20.0f);  // Titik kanan bawah
+    glVertex3f(32.0f, 6.2f, 20.0f);  // Titik kiri atas
+    glVertex3f(32.0f, 6.2f, -20.0f); // Titik kanan atas
+    glEnd();
     
-    
-    glColor4f(121.0/255.0, 215.0/255.0, 190.0/255.0,0.5f);
-    //kiri belakang
+    // kiri belakang
+    glColor4f(0.0f, 0.5f, 1.0f, 0.5f);
     glBegin(GL_TRIANGLES);
-    glNormal3f(0.0f, -1.0f, 0.0f);
-    glVertex3f(31, 6.8, 20);  // Titik atas (kiri atas, sudut siku-siku)
-    glVertex3f(31, -11, 20); // Titik bawah (vertikal)
+    glVertex3f(32, 6.5, 20);  // Titik atas (kiri atas, sudut siku-siku)
+    glVertex3f(32, -11, 20); // Titik bawah (vertikal)
     glVertex3f(45, -11, 20); // Titik kanan (horizontal)
     glEnd();
 
+    // kiri depan
     glBegin(GL_TRIANGLES);
-    glNormal3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(-8.5, 6.8, 20);  // Titik atas (kiri atas, sudut siku-siku)
-    glVertex3f(-8.5, -11, 20); // Titik bawah (vertikal)
-    glVertex3f(-27, -11, 20); // Titik kanan (horizontal)
+    glVertex3f(-8.5, 6.5, 20);  // Titik atas 
+    glVertex3f(-8.5, -11, 20); // Titik bawah 
+    glVertex3f(-26, -11, 20); // Titik kanan 
     glEnd();
 
-    glColor4f(0.0, 204.0 / 255.0f, 221.0 / 255.0f, 0.5f);
+    //kanan depan
+    glColor4f(0.0f, 0.5f, 1.0f, 0.5f);
     glBegin(GL_TRIANGLES);
-    glNormal3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(-28, -11, -20); // Titik kanan (horizontal)
-    glVertex3f(-8.5, -11, -20); // Titik bawah (vertikal)
-    glVertex3f(-8.5, 6.8, -20);   // Titik atas (kiri atas, sudut siku-siku)
+    glVertex3f(-26, -11, -20); // Titik kanan 
+    glVertex3f(-8.5, -11, -20); // Titik bawah 
+    glVertex3f(-8.5, 6.8, -20);   // Titik atas 
     glEnd();
-    // Backward triangle for right side (Segitiga miring ke belakang, kanan)
+    
+    //kanan belakang
     glBegin(GL_TRIANGLES);
-    glNormal3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(31, 6.8, -20);  // Titik atas (kiri atas, sudut siku-siku)
-    glVertex3f(31, -11, -20); // Titik bawah (vertikal)
-    glVertex3f(45, -11, -20); // Titik kanan (horizontal)
+    glVertex3f(32, 6.8, -20);  // Titik atas
+    glVertex3f(32, -11, -20); // Titik bawah
+    glVertex3f(45, -11, -20); // Titik kanan 
     glEnd();
+    glDisable(GL_TEXTURE_2D);
 }
 void myKeyboard(unsigned char key,int x,int y)
 {
@@ -431,12 +447,21 @@ void jalan() {
     glColor3f(0.3f, 0.3f, 0.3f); // Warna abu-abu untuk jalan
     glPushMatrix();
     glTranslatef(0.0f, -40.0f, 0.0f); // Posisi jalan di bawah mobil
+
+    // Enable texturing
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tekstur_jalan); // Assuming textureID is the ID of the loaded texture
+
     glBegin(GL_QUADS);
-    glVertex3f(-1000.0f, 0.0f, -50.0f); // Titik kiri-bawah
-    glVertex3f(1000.0f, 0.0f, -50.0f);  // Titik kanan-bawah
-    glVertex3f(1000.0f, 0.0f, 50.0f);   // Titik kanan-atas
-    glVertex3f(-1000.0f, 0.0f, 50.0f);  // Titik kiri-atas
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-1000.0f, 0.0f, -50.0f); // Titik kiri-bawah
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(1000.0f, 0.0f, -50.0f);  // Titik kanan-bawah
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(1000.0f, 0.0f, 50.0f);   // Titik kanan-atas
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-1000.0f, 0.0f, 50.0f);  // Titik kiri-atas
     glEnd();
+
+    // Disable texturing
+    glDisable(GL_TEXTURE_2D);
+
     glPopMatrix();
 }
 void tiangListrik(float x, float z) {
@@ -479,6 +504,34 @@ void kabelMelintang(float x1, float z1, float x2, float z2) {
     glVertex3f(x2 - 10.0f, 7.0f, z2); // Ujung kiri tiang kedua
     glEnd();
 }
+void init()
+{
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glClearColor(19.0f / 255.0f, 75.0f / 255.0f, 112.0f / 255.0f, 1.0f);
+    // Set up the projection matrix (perspective)
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0f, 1.0f, 1.0f, 1000.0f);
+    //mengembalikan ke modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    // Enable lighting
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_DEPTH_TEST);
+
+    // Set light properties
+    GLfloat light_pos[] = {300.0f, 500.0f, 500.0f, 1.0f};
+    GLfloat light_amb[] = {0.2f, 0.2f, 0.2f, 1.0f};
+    GLfloat light_diff[] = {0.8f, 0.8f, 0.8f, 1.0f};
+    GLfloat light_spec[] = {1.0f, 1.0f, 1.0f, 1.0f};
+
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_amb);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diff);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_spec);
+}
+
 void display()
 {
     wheelAngle += 2.0; // Adjust the wheel rotation speed
@@ -518,11 +571,18 @@ void display()
 
 }
 
+
 int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
     glutCreateWindow("Tugas Besar_Mobil");
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+
+    glewInit();
+
+    // Load texture 
+    tekstur_jalan = loadTexture("jalan.png");
+    texture_kaca = loadTexture("kaca.png"); 
 
     glutFullScreen(); 
     init();
