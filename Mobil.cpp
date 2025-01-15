@@ -5,16 +5,15 @@
 #include <stdlib.h>
 #include <math.h>
 
-float angle = 0.0f;      // Rotation angle for the car frame
+float angle = 0.0f;   
 float wheelAngle = 0.0f; // Rotation angle for the wheel
 bool hidden = false;
 float xf = 0.0f;
 float yf = 0.0f;
-float scale =0.1f;
-float cameraDistance = 10.0f;
+float cameraDistance = 20.0f;
 float cameraAngle=0.0f;
 GLuint tekstur_jalan;
-GLuint texture_kaca;
+//vito Gunawan
 // Fungsi untuk memuat tekstur dari file gambar
 GLuint textureID = 0;
 GLuint loadTexture(const char* path) {
@@ -54,9 +53,7 @@ GLuint loadTexture(const char* path) {
     }
     return -1;
 }
-
-
-void drawLamp(float x, float y, float z, float r, float g, float b) {
+void drawLamp(float x, float y, float z) {
     // Menggambar bagian lampu utama
     glColor3f(1.0, 0.0, 0.0);
     glPushMatrix();
@@ -64,10 +61,10 @@ void drawLamp(float x, float y, float z, float r, float g, float b) {
     glutSolidSphere(3.0, 50, 50); // Lampu utama
     glPopMatrix();
 }
-
-// Fungsi untuk menggambar sisi kiri
-void kiri()
+// Fungsi untuk menggambar sisi 
+void sisi_samping()
 {
+    // Bagian kiri
     glColor3f(0, 0, 1);
     glPushMatrix();
     glTranslatef(0, -20, 20);
@@ -77,7 +74,7 @@ void kiri()
     glutWireCube(60);
     glPopMatrix();
 
-    // Menggambar cermin pertama dengan warna coklat kemerahan
+    // Menggambar cermin kiri
     glColor3f(0.447, 0.04, 0.01);
     glPushMatrix();
     glTranslatef(-24, -13, 25);
@@ -86,18 +83,15 @@ void kiri()
     glutSolidCube(60);
     glPopMatrix();
 
-    // Menggambar cermin kedua
+    // Menggambar gagang cerrmin
     glColor3f(0.447, 0.04, 0.01);
     glPushMatrix();
     glTranslatef(-24.5, -13, 22);
     glScalef(0.02, 0.03, 0.05);
     glutSolidCube(60);
     glPopMatrix();
-}
 
-// Fungsi untuk menggambar sisi kanan
-void kanan()
-{
+    // Bagian kanan
     glColor3f(0, 0, 1);
     glPushMatrix();
     glTranslatef(0, -20, -20);
@@ -107,7 +101,7 @@ void kanan()
     glutWireCube(60);
     glPopMatrix();
 
-    // Menggambar cermin di sisi kanan dengan rotasi yang berbeda
+    // Menggambar cermin kanan
     glColor3f(0.447, 0.04, 0.01);
     glPushMatrix();
     glTranslatef(-24, -13, -25);
@@ -116,7 +110,7 @@ void kanan()
     glutSolidCube(60);
     glPopMatrix();
 
-    // Menggambar cermin kedua di sisi kanan
+    // Menggambar gagang cermin
     glColor3f(0.447, 0.04, 0.01);
     glPushMatrix();
     glTranslatef(-24.5, -13, -22);
@@ -125,10 +119,10 @@ void kanan()
     glPopMatrix();
 }
 
-// Fungsi untuk menggambar bagian atas
-void atap()
+// Menggabungkan fungsi atap dan bawah
+void atas_bawah()
 {
-    // Menggambar bagian atas menggunakan kubus solid dan wireframe
+    // Bagian atap
     glColor3f(0, 0, 1);
     glPushMatrix();
     glTranslatef(11, 6, 0);
@@ -163,13 +157,7 @@ void atap()
     glutWireCube(60);
     glPopMatrix();
 
-
-}
-
-// Fungsi untuk menggambar bagian bawah
-void bawah()
-{
-    // Menggambar bagian bawah
+    // Bagian bawah
     glColor3f(0, 0, 1);
     glPushMatrix();
     glTranslatef(0, -29, 0);
@@ -180,10 +168,10 @@ void bawah()
     glPopMatrix();
 }
 
-// Fungsi untuk menggambar bagian depan
-void depan()
+// Menggabungkan fungsi depan dan belakang
+void depan_belakang()
 {
-    // Menggambar bagian depan
+    // Bagian depan
     glColor3f(0, 0, 1);
     glPushMatrix();
     glTranslatef(-45, -20, 0);
@@ -202,17 +190,7 @@ void depan()
     glutWireCube(60);
     glPopMatrix();
 
-    
-
-    // Menggambar lampu depan
-    drawLamp(-45, -15, 12, 1.0f, 1.0f, 0.8f); // Lampu depan kiri
-    drawLamp(-45, -15, -12, 1.0f, 1.0f, 0.8f); // Lampu depan kanan
-}
-
-// Fungsi untuk menggambar bagian belakang
-void belakang()
-{
-    // Menggambar bagian belakang
+    // Bagian belakang
     glColor3f(0, 0, 1);
     glPushMatrix();
     glTranslatef(45, -20, 0);
@@ -228,89 +206,44 @@ void belakang()
     glTranslatef(38.5, -2, 0);
     glRotatef(36, 0, 0, 1);  // Rotasi sebesar 36 derajat
     glScalef(0.01, 0.35, 0.666667);
-    glutWireCube(60);
+    glutWireCube(60); 
     glPopMatrix();
 
-    drawLamp(45, -15, 12, 1.0f, 0.0f, 0.0f); // Lampu belakang kiri
-    drawLamp(45, -15, -12, 1.0f, 0.0f, 0.0f); // Lampu belakang kanan
+    // Menggambar lampu depan
+    drawLamp(-45, -15, 12); // Lampu depan kiri
+    drawLamp(-45, -15, -12); // Lampu depan kanan
+    //lampu belakang
+    drawLamp(45, -15, 12); // Lampu belakang kiri
+    drawLamp(45, -15, -12); // Lampu belakang kanan
 }
-void addGlass()
-{
+
+void jalan() {
+    glColor3f(0.3f, 0.3f, 0.3f); // Warna abu-abu untuk jalan
+    glPushMatrix();
+    glTranslatef(0.0f, -40.0f, 0.0f); // Posisi jalan di bawah mobil
+
+    // Enable texturing
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texture_kaca);
-    //Depan
-    glColor4f(0.0f, 0.5f, 1.0f, 0.5f);
-    glBegin(GL_QUADS);
-    glVertex3f(-27.9f, -13.0f, -20.0f); // Titik kiri bawah
-    glVertex3f(-27.9f, -13.0f, 20.0f);  // Titik kanan bawah
-    glVertex3f(-8.5f, 6.8f, 20.0f);  // Titik kanan atas
-    glVertex3f(-8.5f, 6.8f, -20.0f); // Titik kiri atas
-    glEnd();
-    //kiri
-    glColor4f(0.0f, 0.5f, 1.0f, 0.5f);
-    glBegin(GL_QUADS);
-    glVertex3f(32.0f, -11.0f, 20.0f); // Titik kanan bawah
-    glVertex3f(32.0f, 6.0f, 20.0f); // Titik kana atas
-    glVertex3f(-8.5f, 6.0f, 20.0f); // Titik kiri atas
-    glVertex3f(-8.5f, -11.0f, 20.0f); // Titik kiri bawah
-    glEnd();
+    glBindTexture(GL_TEXTURE_2D, tekstur_jalan); // Assuming textureID is the ID of the loaded texture
 
-    //kanan
-    glColor4f(0.0f, 0.5f, 1.0f, 0.5f);
     glBegin(GL_QUADS);
-    glVertex3f(32.0f, -11.0f, -20.0f); // Titik kanan bawah
-    glVertex3f(32.0f, 6.0f, -20.0f); // Titik kanan atas
-    glVertex3f(-8.5f, 6.0f, -20.0f); // Titik kiri atas
-    glVertex3f(-8.5f, -11.0f, -20.0f); // Titik kiri bawah
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-1000.0f, 0.0f, -50.0f); // Titik kiri-bawah
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(1000.0f, 0.0f, -50.0f);  // Titik kanan-bawah
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(1000.0f, 0.0f, 50.0f);   // Titik kanan-atas
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-1000.0f, 0.0f, 50.0f);  // Titik kiri-atas
     glEnd();
-
-    // Back Glass (Belakang)
-    glColor4f(0.0f, 0.5f, 0.5f, 0.5f);
-    glBegin(GL_QUADS);
-    glVertex3f(45.0f, -11.0f, -20.0f); // Titik kiri bawah
-    glVertex3f(45.0f, -11.0f, 20.0f);  // Titik kanan bawah
-    glVertex3f(32.0f, 6.2f, 20.0f);  // Titik kiri atas
-    glVertex3f(32.0f, 6.2f, -20.0f); // Titik kanan atas
-    glEnd();
-    
-    // kiri belakang
-    glColor4f(0.0f, 0.5f, 1.0f, 0.5f);
-    glBegin(GL_TRIANGLES);
-    glVertex3f(32, 6.5, 20);  // Titik atas (kiri atas, sudut siku-siku)
-    glVertex3f(32, -11, 20); // Titik bawah (vertikal)
-    glVertex3f(45, -11, 20); // Titik kanan (horizontal)
-    glEnd();
-
-    // kiri depan
-    glBegin(GL_TRIANGLES);
-    glVertex3f(-8.5, 6.5, 20);  // Titik atas 
-    glVertex3f(-8.5, -11, 20); // Titik bawah 
-    glVertex3f(-26, -11, 20); // Titik kanan 
-    glEnd();
-
-    //kanan depan
-    glColor4f(0.0f, 0.5f, 1.0f, 0.5f);
-    glBegin(GL_TRIANGLES);
-    glVertex3f(-26, -11, -20); // Titik kanan 
-    glVertex3f(-8.5, -11, -20); // Titik bawah 
-    glVertex3f(-8.5, 6.8, -20);   // Titik atas 
-    glEnd();
-    
-    //kanan belakang
-    glBegin(GL_TRIANGLES);
-    glVertex3f(32, 6.8, -20);  // Titik atas
-    glVertex3f(32, -11, -20); // Titik bawah
-    glVertex3f(45, -11, -20); // Titik kanan 
-    glEnd();
+    // Disable texturing
     glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
 }
+//fadhlian 
 void myKeyboard(unsigned char key,int x,int y)
 {
     float jarakMaksimum = 500.0f;
     float angleStep = 3.0f;   // Langkah rotasi kamera
     float zoomStep = 20.0f;   // Langkah zoom
-    float minZoom = 200.0f;   // Jarak minimum dekat 
-    float maxZoom = 350.0f;  // Jarak maksimum jauh
+    float minZoomIn = 200.0f;   // Jarak minimum dekat 
+    float maxZoomOut = 350.0f;  // Jarak maksimum jauh
 
     switch (key)
     {
@@ -322,8 +255,8 @@ void myKeyboard(unsigned char key,int x,int y)
         break;
 
     case 'w': // Gerakkan mobil maju
-        xf -= cos(angle * M_PI / 180.0f) * 10.0f;
-        yf -= sin(angle * M_PI / 180.0f) * 10.0f;
+        xf -= cos(angle * M_PI / 180.0f) * 5.0f;
+        yf -= sin(angle * M_PI / 180.0f) * 5.0f;
 
         if (xf > jarakMaksimum)
             xf = -jarakMaksimum;
@@ -332,8 +265,8 @@ void myKeyboard(unsigned char key,int x,int y)
         break;
 
     case 's': // Gerakkan mobil mundur
-        xf += cos(angle * M_PI / 180.0f) * 10.0f;
-        yf += sin(angle * M_PI / 180.0f) * 10.0f;
+        xf += cos(angle * M_PI / 180.0f) * 5.0f;
+        yf += sin(angle * M_PI / 180.0f) * 5.0f;
 
         if (xf > jarakMaksimum)
             xf = -jarakMaksimum;
@@ -355,14 +288,14 @@ void myKeyboard(unsigned char key,int x,int y)
 
     case '+': // Zoom in (kamera mendekat)
         cameraDistance -= zoomStep;
-        if (cameraDistance < minZoom)
-            cameraDistance = minZoom; // Batasi jarak minimum
+        if (cameraDistance < minZoomIn)
+            cameraDistance = minZoomIn; // Batasi jarak minimum
         break;
 
     case '-': // Zoom out (kamera menjauh)
         cameraDistance += zoomStep;
-        if (cameraDistance > maxZoom)
-            cameraDistance = maxZoom; // Batasi jarak maksimum
+        if (cameraDistance > maxZoomOut)
+            cameraDistance = maxZoomOut; // Batasi jarak maksimum
         break;
     }
 	glutPostRedisplay();
@@ -382,7 +315,6 @@ void cartecius()
     glVertex3f(0.0, 0.0, 900.0);
     glEnd();
 }
-
 void hiddencarte()
 {
 	if (hidden)
@@ -390,11 +322,74 @@ void hiddencarte()
 		cartecius();
 	}
 }
+void addGlass()
+{
+    //Depan
+    glColor3f(0.0f, 0.0f, 0.0);
+    glBegin(GL_QUADS);
+    glVertex3f(-27.9f, -13.0f, -20.0f); // Titik kiri bawah
+    glVertex3f(-27.9f, -13.0f, 20.0f);  // Titik kanan bawah
+    glVertex3f(-8.5f, 5.8f, 20.0f);  // Titik kanan atas
+    glVertex3f(-8.5f, 5.8f, -20.0f); // Titik kiri atas
+    glEnd();
+    //kiri
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_QUADS);
+    glVertex3f(32.0f, -11.0f, 20.0f); // Titik kanan bawah
+    glVertex3f(32.0f, 6.0f, 20.0f); // Titik kana atas
+    glVertex3f(-8.5f, 6.0f, 20.0f); // Titik kiri atas
+    glVertex3f(-8.5f, -11.0f, 20.0f); // Titik kiri bawah
+    glEnd();
 
+    //kanan
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_QUADS);
+    glVertex3f(32.0f, -11.0f, -20.0f); // Titik kanan bawah
+    glVertex3f(32.0f, 6.0f, -20.0f); // Titik kanan atas
+    glVertex3f(-8.5f, 6.0f, -20.0f); // Titik kiri atas
+    glVertex3f(-8.5f, -11.0f, -20.0f); // Titik kiri bawah
+    glEnd();
 
+    // Back Glass (Belakang)
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_QUADS);
+    glVertex3f(45.0f, -11.0f, -20.0f); // Titik kiri bawah
+    glVertex3f(45.0f, -11.0f, 20.0f);  // Titik kanan bawah
+    glVertex3f(32.0f, 6.2f, 20.0f);  // Titik kiri atas
+    glVertex3f(32.0f, 6.2f, -20.0f); // Titik kanan atas
+    glEnd();
+    
+    // kiri belakang
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_TRIANGLES);
+    glVertex3f(32, 6.5, 20);  // Titik atas (kiri atas, sudut siku-siku)
+    glVertex3f(32, -11, 20); // Titik bawah (vertikal)
+    glVertex3f(45, -11, 20); // Titik kanan (horizontal)
+    glEnd();
+
+    // kiri depan
+    glBegin(GL_TRIANGLES);
+    glVertex3f(-8.5, 6.5, 20);  // Titik atas 
+    glVertex3f(-8.5, -11, 20); // Titik bawah 
+    glVertex3f(-26, -11, 20); // Titik kanan 
+    glEnd();
+
+    //kanan depan
+    glBegin(GL_TRIANGLES);
+    glVertex3f(-26, -11, -20); // Titik kanan 
+    glVertex3f(-8.5, -11, -20); // Titik bawah 
+    glVertex3f(-8.5, 6.8, -20);   // Titik atas 
+    glEnd();
+    
+    //kanan belakang
+    glBegin(GL_TRIANGLES);
+    glVertex3f(32, 6.8, -20);  // Titik atas
+    glVertex3f(32, -11, -20); // Titik bawah
+    glVertex3f(45, -11, -20); // Titik kanan 
+    glEnd();
+}
 void wheel(int x, int y, int z)
 {
-    float th;
     glColor3f(0.0f, 0.0f, 0.0f); // Set wheel color to black
 
     // Outer wheel
@@ -428,12 +423,9 @@ void mobil()
     glScalef(1, 1, 1); // Apply scaling
 
 	
-    depan();
-    belakang();
-    atap();
-    bawah();
-    kiri();
-    kanan();
+    sisi_samping();
+    atas_bawah();
+    depan_belakang();
     addGlass();
 	hiddencarte();
     wheel(-33, -33, 15);
@@ -443,65 +435,46 @@ void mobil()
     
     glPopMatrix();
 }
-void jalan() {
-    glColor3f(0.3f, 0.3f, 0.3f); // Warna abu-abu untuk jalan
-    glPushMatrix();
-    glTranslatef(0.0f, -40.0f, 0.0f); // Posisi jalan di bawah mobil
 
-    // Enable texturing
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, tekstur_jalan); // Assuming textureID is the ID of the loaded texture
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(-1000.0f, 0.0f, -50.0f); // Titik kiri-bawah
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(1000.0f, 0.0f, -50.0f);  // Titik kanan-bawah
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(1000.0f, 0.0f, 50.0f);   // Titik kanan-atas
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(-1000.0f, 0.0f, 50.0f);  // Titik kiri-atas
-    glEnd();
-
-    // Disable texturing
-    glDisable(GL_TEXTURE_2D);
-
-    glPopMatrix();
-}
 void tiangListrik(float x, float z) {
     // Tiang vertikal
-    glColor3f(0.55f, 0.27f, 0.07f); // Warna cokelat untuk tiang
+    glColor3ub(114, 125, 115);
     glPushMatrix();
     glTranslatef(x, -40.0f, z);  // Posisi dasar tiang
     GLUquadric *quad = gluNewQuadric();
     glRotatef(-90, 1, 0, 0);     // Rotasi untuk orientasi vertikal
-    gluCylinder(quad, 2.0, 2.0, 50.0, 30, 30); // Tiang utama
+    gluCylinder(quad, 2.0, 2.0, 90.0, 30, 30); // Tiang utama
     gluDeleteQuadric(quad);
     glPopMatrix();
 
     /// Tiang horizontal (solid cube)
     glPushMatrix();
     glTranslatef(x, 7.0f, z);   // Posisi untuk tiang horizontal di tengah tiang vertikal
-    glColor3f(0.55f, 0.27f, 0.07f);
-    glRotatef(60, 0, 1, 0);  // Warna cokelat
+    glColor3ub(114, 125, 115);
+    glRotatef(60, 0, 1, 0); 
 
     // Tiang horizontal ke kanan
     glPushMatrix();
-    glTranslatef(10.0f, 0.0f, 0.0f); // Pindah ke kanan dari pusat tiang
+    glTranslatef(10.0f, 35.0f, 0.0f); // Pindah ke kanan dari pusat tiang
     glScalef(15.0f, 1.0f, 1.0f);     // Skala untuk memperpanjang kubus menjadi seperti balok horizontal
     glutSolidCube(1.0f);             // Kubus solid dengan skala
     glPopMatrix();
 
     // Tiang horizontal ke kiri
     glPushMatrix();
-    glTranslatef(-10.0f, 0.0f, 0.0f); // Pindah ke kiri dari pusat tiang
+    glTranslatef(-10.0f, 35.0f, 0.0f); // Pindah ke kiri dari pusat tiang
     glScalef(15.0f, 1.0f, 1.0f);      // Skala untuk memperpanjang kubus menjadi seperti balok horizontal
     glutSolidCube(1.0f);              // Kubus solid dengan skala
     glPopMatrix();
 
     glPopMatrix();
 }
+//kayla
 void kabelMelintang(float x1, float z1, float x2, float z2) {
     glColor3f(0.0f, 0.0f, 0.0f); // Warna hitam untuk kabel
     glBegin(GL_LINES);
-    glVertex3f(x1 + 10.0f, 7.0f, z1); // Ujung kanan tiang pertama
-    glVertex3f(x2 - 10.0f, 7.0f, z2); // Ujung kiri tiang kedua
+    glVertex3f(x1, 42.0f, z1); // Ujung kanan tiang pertama
+    glVertex3f(x2 , 42.0f, z2); // Ujung kiri tiang kedua
     glEnd();
 }
 void init()
@@ -542,10 +515,9 @@ void display()
     float cameraZ = cameraDistance * sin(cameraAngle * M_PI / 180.0f);
 
     // Atur posisi kamera menggunakan gluLookAt
-    gluLookAt(cameraX, 100.0f, cameraZ, // Posisi kamera (X, Y, Z)
+    gluLookAt(cameraX, 120.0f, cameraZ, // Posisi kamera (X, Y, Z)
               0.0f, 0.0f, 0.0f,         // Titik fokus kamera
               0.0f, 1.0f, 0.0f);         // Up vector (Y-axis)
-    
     jalan();
      // Gambar tiang listrik
     tiangListrik(-500.0f, -40.0f);
@@ -582,7 +554,6 @@ int main(int argc, char **argv)
 
     // Load texture 
     tekstur_jalan = loadTexture("jalan.png");
-    texture_kaca = loadTexture("kaca.png"); 
 
     glutFullScreen(); 
     init();
@@ -590,7 +561,6 @@ int main(int argc, char **argv)
     glEnable(GL_DEPTH_TEST);
     glutKeyboardFunc(myKeyboard);
     
-
     glutMainLoop();
 
     return 0;
