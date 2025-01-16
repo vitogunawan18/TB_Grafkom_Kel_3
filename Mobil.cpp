@@ -132,24 +132,16 @@ void atas_bawah()
     glutWireCube(60);
     glPopMatrix();
 
-    // Bagian atas kedua
-    glColor3f(0 , 0, 1);
-    glPushMatrix();
-    glTranslatef(-36, -11, 0);
-    glScalef(0.3, 0.01, 0.666667);
-    glutSolidCube(60);
-    glColor3f(1, 1, 1);
-    glutWireCube(60);
-    glPopMatrix();
+    
 
-    // Menggambar pintu samping
+    // Menggambar pintu samping kiri
     glColor3f(1, 1, 1);
     glPushMatrix();
     glTranslatef(11, -20, 20);
     glScalef(0.01, 0.3, 0.01);
     glutWireCube(60);
     glPopMatrix();
-
+    //pintu samping kanan
     glColor3f(1, 1, 1);
     glPushMatrix();
     glTranslatef(11, -20, -20);
@@ -168,7 +160,6 @@ void atas_bawah()
     glPopMatrix();
 }
 
-// Menggabungkan fungsi depan dan belakang
 void depan_belakang()
 {
     // Bagian depan
@@ -176,6 +167,16 @@ void depan_belakang()
     glPushMatrix();
     glTranslatef(-45, -20, 0);
     glScalef(0.01, 0.3, 0.666667);
+    glutSolidCube(60);
+    glColor3f(1, 1, 1);
+    glutWireCube(60);
+    glPopMatrix();
+
+    // Bagian atas 
+    glColor3f(0 , 0, 1);
+    glPushMatrix();
+    glTranslatef(-36, -11, 0);
+    glScalef(0.3, 0.01, 0.666667);
     glutSolidCube(60);
     glColor3f(1, 1, 1);
     glutWireCube(60);
@@ -234,6 +235,39 @@ void jalan() {
     glEnd();
     // Disable texturing
     glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+}
+void tiangListrik(float x, float z) {
+    // Tiang vertikal
+    glColor3ub(114, 125, 115);
+    glPushMatrix();
+    glTranslatef(x, -40.0f, z);  // Posisi dasar tiang
+    GLUquadric *quad = gluNewQuadric();
+    glRotatef(-90, 1, 0, 0);     // Rotasi untuk orientasi vertikal
+    gluCylinder(quad, 2.0, 2.0, 90.0, 30, 30); // Tiang utama
+    gluDeleteQuadric(quad);
+    glPopMatrix();
+
+    /// Tiang horizontal (solid cube)
+    glPushMatrix();
+    glTranslatef(x, 7.0f, z);   // Posisi untuk tiang horizontal di tengah tiang vertikal
+    glColor3ub(114, 125, 115);
+    glRotatef(60, 0, 1, 0); 
+
+    // Tiang horizontal ke kanan
+    glPushMatrix();
+    glTranslatef(10.0f, 35.0f, 0.0f); // Pindah ke kanan dari pusat tiang
+    glScalef(15.0f, 1.0f, 1.0f);     // Skala untuk memperpanjang kubus menjadi seperti balok horizontal
+    glutSolidCube(1.0f);             // Kubus solid dengan skala
+    glPopMatrix();
+
+    // Tiang horizontal ke kiri
+    glPushMatrix();
+    glTranslatef(-10.0f, 35.0f, 0.0f); // Pindah ke kiri dari pusat tiang
+    glScalef(15.0f, 1.0f, 1.0f);      // Skala untuk memperpanjang kubus menjadi seperti balok horizontal
+    glutSolidCube(1.0f);              // Kubus solid dengan skala
+    glPopMatrix();
+
     glPopMatrix();
 }
 //fadhlian 
@@ -436,39 +470,6 @@ void mobil()
     glPopMatrix();
 }
 
-void tiangListrik(float x, float z) {
-    // Tiang vertikal
-    glColor3ub(114, 125, 115);
-    glPushMatrix();
-    glTranslatef(x, -40.0f, z);  // Posisi dasar tiang
-    GLUquadric *quad = gluNewQuadric();
-    glRotatef(-90, 1, 0, 0);     // Rotasi untuk orientasi vertikal
-    gluCylinder(quad, 2.0, 2.0, 90.0, 30, 30); // Tiang utama
-    gluDeleteQuadric(quad);
-    glPopMatrix();
-
-    /// Tiang horizontal (solid cube)
-    glPushMatrix();
-    glTranslatef(x, 7.0f, z);   // Posisi untuk tiang horizontal di tengah tiang vertikal
-    glColor3ub(114, 125, 115);
-    glRotatef(60, 0, 1, 0); 
-
-    // Tiang horizontal ke kanan
-    glPushMatrix();
-    glTranslatef(10.0f, 35.0f, 0.0f); // Pindah ke kanan dari pusat tiang
-    glScalef(15.0f, 1.0f, 1.0f);     // Skala untuk memperpanjang kubus menjadi seperti balok horizontal
-    glutSolidCube(1.0f);             // Kubus solid dengan skala
-    glPopMatrix();
-
-    // Tiang horizontal ke kiri
-    glPushMatrix();
-    glTranslatef(-10.0f, 35.0f, 0.0f); // Pindah ke kiri dari pusat tiang
-    glScalef(15.0f, 1.0f, 1.0f);      // Skala untuk memperpanjang kubus menjadi seperti balok horizontal
-    glutSolidCube(1.0f);              // Kubus solid dengan skala
-    glPopMatrix();
-
-    glPopMatrix();
-}
 //kayla
 void kabelMelintang(float x1, float z1, float x2, float z2) {
     glColor3f(0.0f, 0.0f, 0.0f); // Warna hitam untuk kabel
@@ -519,7 +520,7 @@ void display()
               0.0f, 0.0f, 0.0f,         // Titik fokus kamera
               0.0f, 1.0f, 0.0f);         // Up vector (Y-axis)
     jalan();
-     // Gambar tiang listrik
+     // Gambar tiang listrik  vito
     tiangListrik(-500.0f, -40.0f);
     tiangListrik(-200.0f, -40.0f);
     tiangListrik(0.0f, -40.0f);
@@ -552,7 +553,7 @@ int main(int argc, char **argv)
 
     glewInit();
 
-    // Load texture 
+    // Load texture Vito
     tekstur_jalan = loadTexture("jalan.png");
 
     glutFullScreen(); 
