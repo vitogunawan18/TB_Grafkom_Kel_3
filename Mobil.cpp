@@ -10,10 +10,11 @@ float wheelAngle = 0.0f; // Rotation angle for the wheel
 bool hidden = false;
 float xf = 0.0f;
 float yf = 0.0f;
-float cameraDistance = 20.0f;
+float cameraDistance = 200.0f;
 float cameraAngle=0.0f;
 GLuint tekstur_jalan;
-//vito Gunawan
+//vito Gunawan --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // Fungsi untuk memuat tekstur dari file gambar
 GLuint textureID = 0;
 GLuint loadTexture(const char* path) {
@@ -65,7 +66,7 @@ void drawLamp(float x, float y, float z) {
 void sisi_samping()
 {
     // Bagian kiri
-    glColor3f(0, 0, 1);
+    glColor3ub(56, 75, 112);
     glPushMatrix();
     glTranslatef(0, -20, 20);
     glScalef(1.5, 0.3, 0.01);
@@ -92,7 +93,7 @@ void sisi_samping()
     glPopMatrix();
 
     // Bagian kanan
-    glColor3f(0, 0, 1);
+    glColor3ub(56, 75, 112);
     glPushMatrix();
     glTranslatef(0, -20, -20);
     glScalef(1.5, 0.3, 0.01);
@@ -120,11 +121,13 @@ void sisi_samping()
 }
 
 // Menggabungkan fungsi atap dan bawah
-void atas_bawah()
+void atas_bawah(float merah = 0.0, float hijau = 0.0, float biru = 0.0, float kilauan = 0.0)
 {
     // Bagian atap
-    glColor3f(0, 0, 1);
+    glEnable(GL_NORMALIZE);
+    glColor3ub(56, 75, 112);
     glPushMatrix();
+    glNormal3f(0.0f, 1.0f, 0.0f); 
     glTranslatef(11, 6, 0);
     glScalef(0.7, 0.01, 0.666667);
     glutSolidCube(60);
@@ -150,7 +153,7 @@ void atas_bawah()
     glPopMatrix();
 
     // Bagian bawah
-    glColor3f(0, 0, 1);
+    glColor3ub(56, 75, 112);
     glPushMatrix();
     glTranslatef(0, -29, 0);
     glScalef(1.5, 0.01, 0.666667);
@@ -163,7 +166,7 @@ void atas_bawah()
 void depan_belakang()
 {
     // Bagian depan
-    glColor3f(0, 0, 1);
+    glColor3ub(56, 75, 112);
     glPushMatrix();
     glTranslatef(-45, -20, 0);
     glScalef(0.01, 0.3, 0.666667);
@@ -173,7 +176,7 @@ void depan_belakang()
     glPopMatrix();
 
     // Bagian atas 
-    glColor3f(0 , 0, 1);
+    glColor3ub(56, 75, 112);
     glPushMatrix();
     glTranslatef(-36, -11, 0);
     glScalef(0.3, 0.01, 0.666667);
@@ -192,7 +195,7 @@ void depan_belakang()
     glPopMatrix();
 
     // Bagian belakang
-    glColor3f(0, 0, 1);
+    glColor3ub(56, 75, 112);
     glPushMatrix();
     glTranslatef(45, -20, 0);
     glScalef(0.01, 0.3, 0.666667);
@@ -270,7 +273,8 @@ void tiangListrik(float x, float z) {
 
     glPopMatrix();
 }
-//fadhlian 
+//fadhlian --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 void myKeyboard(unsigned char key,int x,int y)
 {
     float jarakMaksimum = 500.0f;
@@ -449,6 +453,28 @@ void wheel(int x, int y, int z)
     }
     glPopMatrix();
 }
+
+void cahaya(){
+    // Enable lighting
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_DEPTH_TEST);
+
+    // Set light properties
+    GLfloat light_pos[] = {0.0f, 100.0f, 0.0f, 1.0f};
+    GLfloat light_amb[] = {0.1f, 0.1f, 0.1f, 1.0f};
+    GLfloat light_diff[] = {0.7f, 0.7f, 0.7f, 1.0f};
+    GLfloat light_spec[] = {0.1f, 0.1f, 0.1f, 0.0f};
+    
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_amb);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diff);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_spec);
+    
+}
+//kayla--------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 void mobil()
 {
 	glPushMatrix();
@@ -469,8 +495,6 @@ void mobil()
     
     glPopMatrix();
 }
-
-//kayla
 void kabelMelintang(float x1, float z1, float x2, float z2) {
     glColor3f(0.0f, 0.0f, 0.0f); // Warna hitam untuk kabel
     glBegin(GL_LINES);
@@ -478,6 +502,7 @@ void kabelMelintang(float x1, float z1, float x2, float z2) {
     glVertex3f(x2 , 42.0f, z2); // Ujung kiri tiang kedua
     glEnd();
 }
+
 void init()
 {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -488,22 +513,7 @@ void init()
     gluPerspective(45.0f, 1.0f, 1.0f, 1000.0f);
     //mengembalikan ke modelview matrix
     glMatrixMode(GL_MODELVIEW);
-    // Enable lighting
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_DEPTH_TEST);
-
-    // Set light properties
-    GLfloat light_pos[] = {300.0f, 500.0f, 500.0f, 1.0f};
-    GLfloat light_amb[] = {0.2f, 0.2f, 0.2f, 1.0f};
-    GLfloat light_diff[] = {0.8f, 0.8f, 0.8f, 1.0f};
-    GLfloat light_spec[] = {1.0f, 1.0f, 1.0f, 1.0f};
-
-    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-    glLightfv(GL_LIGHT0, GL_AMBIENT, light_amb);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diff);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light_spec);
+    
 }
 
 void display()
@@ -520,7 +530,9 @@ void display()
               0.0f, 0.0f, 0.0f,         // Titik fokus kamera
               0.0f, 1.0f, 0.0f);         // Up vector (Y-axis)
     jalan();
-     // Gambar tiang listrik  vito
+
+     // vito--------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------------------
     tiangListrik(-500.0f, -40.0f);
     tiangListrik(-200.0f, -40.0f);
     tiangListrik(0.0f, -40.0f);
@@ -528,6 +540,8 @@ void display()
     tiangListrik(400.0f, -40.0f);
     tiangListrik(700.0f, -40.0f);
 
+    //kayla--------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------------------
     // Gambar kabel melintang kanan
     kabelMelintang(-520.0f, -27.0f, 700.0f, -27.0f);
     // Gambar kabel melintang kiri
@@ -538,7 +552,7 @@ void display()
     glScalef(1.0, 1.0, 1.0); // Apply scaling
     mobil(); // Gambar mobil
     glPopMatrix();
-    
+    cahaya();
     glutSwapBuffers();
     glutPostRedisplay();
 
@@ -552,10 +566,8 @@ int main(int argc, char **argv)
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
     glewInit();
-
     // Load texture Vito
     tekstur_jalan = loadTexture("jalan.png");
-
     glutFullScreen(); 
     init();
     glutDisplayFunc(display);
